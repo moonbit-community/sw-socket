@@ -50,7 +50,7 @@ MOONBIT_FFI_EXPORT void __socket_ffi_sockaddr_in_set_family(
 
 MOONBIT_FFI_EXPORT uint32_t
 __socket_ffi_sockaddr_in_get_addr(struct sockaddr_in* addr) {
-  addr->sin_addr.s_addr;
+  return addr->sin_addr.s_addr;
 }
 
 MOONBIT_FFI_EXPORT void __socket_ffi_sockaddr_in_set_addr(
@@ -84,7 +84,7 @@ MOONBIT_FFI_EXPORT uint8_t* __socket_ffi_sockaddr_in_get_addr_str(
 MOONBIT_FFI_EXPORT uint32_t __socket_ffi_sockaddr_in_set_addr_str(
     struct sockaddr_in* addr, uint8_t* addr_str) {
   struct in_addr in_addr;
-  if (inet_pton(AF_INET, addr_str, &in_addr) <= 0) {
+  if (inet_pton(AF_INET, (const char*)addr_str, &in_addr) <= 0) {
     return 1;
   }
   memcpy(&addr->sin_addr, &in_addr, sizeof(struct in_addr));
