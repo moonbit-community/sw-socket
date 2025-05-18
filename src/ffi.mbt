@@ -97,6 +97,7 @@ pub fn Hostent::get_addr(self : Hostent) -> UInt {
 
 ///|
 struct Socket {
+  domain : AddrFamily
   inner : Int
 }
 
@@ -104,8 +105,16 @@ struct Socket {
 pub fn new_socket(
   domain : AddrFamily,
   type_ : SocketType,
-  protocol : IpProtocol
+  protocol~ : IpProtocol? = None
 ) -> Socket!Failure {
+  let protocol = if protocol.is_empty() {
+    match type_ {
+      SocketType::SOCK_STREAM => IpProtocol::IPPROTO_TCP
+      SocketType::SOCK_DGRAM => IpProtocol::IPPROTO_UDP
+    }
+  } else {
+    protocol.unwrap()
+  }
   let fd = @internal._ffi_socket(
     domain.to_u16().to_int(),
     type_.to_u16().to_int(),
@@ -119,7 +128,7 @@ pub fn new_socket(
     }
     fail!("socket failed: \{fd}")
   }
-  Socket::{ inner: fd }
+  Socket::{ domain, inner: fd }
 }
 
 ///|
@@ -138,7 +147,7 @@ pub fn Socket::close(self : Socket) -> Unit!Failure {
 }
 
 ///|
-pub fn Socket::connect(self : Socket, addr : SockaddrIn) -> Unit!Failure {
+pub fn Socket::connect_addr(self : Socket, addr : SockaddrIn) -> Unit!Failure {
   let result = @internal._ffi_connect(self.inner, addr.inner)
   if result < 0 {
     let err_str = if result == -1 {
@@ -154,7 +163,21 @@ pub fn Socket::connect(self : Socket, addr : SockaddrIn) -> Unit!Failure {
 }
 
 ///|
-pub fn Socket::bind(self : Socket, addr : SockaddrIn) -> Unit!Failure {
+pub fn Socket::connect(
+  self : Socket,
+  addr : Hostent,
+  port : UInt16
+) -> SockaddrIn!Failure {
+  let sockaddr_in = new_sockaddr_in!()
+    ..set_family(self.domain)
+    ..set_addr(addr.get_addr())
+    ..set_port(port)
+  self.connect_addr!(sockaddr_in)
+  sockaddr_in
+}
+
+///|
+pub fn Socket::bind_addr(self : Socket, addr : SockaddrIn) -> Unit!Failure {
   let result = @internal._ffi_bind(self.inner, addr.inner)
   if result < 0 {
     let err_str = if result == -1 {
@@ -167,6 +190,20 @@ pub fn Socket::bind(self : Socket, addr : SockaddrIn) -> Unit!Failure {
     self.close!()
     fail!(err_str)
   }
+}
+
+///|
+pub fn Socket::bind(
+  self : Socket,
+  addr : String,
+  port : UInt16
+) -> SockaddrIn!Failure {
+  let sockaddr_in = new_sockaddr_in!()
+    ..set_family(self.domain)
+    ..set_addr_str!(addr)
+    ..set_port(port)
+  self.bind_addr!(sockaddr_in)
+  sockaddr_in
 }
 
 ///|
@@ -186,7 +223,8 @@ pub fn Socket::listen(self : Socket, backlog : Int) -> Unit!Failure {
 }
 
 ///|
-pub fn Socket::accept(self : Socket, addr : SockaddrIn) -> Socket!Failure {
+pub fn Socket::accept(self : Socket) -> (Socket, SockaddrIn)!Failure {
+  let addr = new_sockaddr_in!()
   let fd = @internal._ffi_accept(self.inner, addr.inner)
   if fd < 0 {
     let err_str = if fd == -1 {
@@ -199,7 +237,7 @@ pub fn Socket::accept(self : Socket, addr : SockaddrIn) -> Socket!Failure {
     self.close!()
     fail!(err_str)
   }
-  Socket::{ inner: fd }
+  (Socket::{ domain: self.domain, inner: fd }, addr)
 }
 
 ///|
@@ -229,7 +267,7 @@ pub impl Sendable for Bytes with send(
 pub fn Socket::send[Sendable : Sendable](
   self : Socket,
   sendable : Sendable,
-  flags : Int
+  flags~ : Int = 0
 ) -> Int64!Failure {
   let result = sendable.send!(self, flags)
   if result < 0 {
@@ -276,8 +314,8 @@ pub impl SendToAble for Bytes with send_to(
 pub fn Socket::send_to[SendToAble : SendToAble](
   self : Socket,
   sendable : SendToAble,
-  flags : Int,
-  addr : SockaddrIn
+  addr : SockaddrIn,
+  flags~ : Int = 0x800 // MSG_CONFIRM
 ) -> Int64!Failure {
   let result = sendable.send_to!(self, flags, addr)
   if result < 0 {
@@ -295,10 +333,10 @@ pub fn Socket::send_to[SendToAble : SendToAble](
 }
 
 ///|
-pub fn Socket::recv(
+pub fn Socket::recv_buffer(
   self : Socket,
   buf : FixedArray[Byte],
-  flags : Int
+  flags~ : Int = 0
 ) -> Int64!Failure {
   let result = @internal._ffi_recv(self.inner, buf, flags)
   if result < 0 {
@@ -316,12 +354,23 @@ pub fn Socket::recv(
 }
 
 ///|
-pub fn Socket::recv_from(
+pub fn Socket::recv(self : Socket, buf_size : Int) -> FixedArray[Byte]!Failure {
+  guard buf_size > 0 else { fail!("recv: buf_size must be greater than 0") }
+  let mut buf : FixedArray[Byte] = FixedArray::make(buf_size, (0).to_byte())
+  let len = self.recv_buffer!(buf)
+  if len.to_int() != buf_size {
+    buf = FixedArray::makei(len.to_int(), fn(i) { buf[i] })
+  }
+  buf
+}
+
+///|
+pub fn Socket::recv_from_buffer(
   self : Socket,
   buf : FixedArray[Byte],
-  flags : Int,
-  addr : SockaddrIn
-) -> Int64!Failure {
+  flags~ : Int = 0x100 // MSG_WAITALL
+) -> (Int64, SockaddrIn)!Failure {
+  let addr = new_sockaddr_in!()
   let result = @internal._ffi_recvfrom(self.inner, buf, flags, addr.inner)
   if result < 0 {
     let err_str = if result == -1 {
@@ -334,7 +383,23 @@ pub fn Socket::recv_from(
     self.close!()
     fail!(err_str)
   }
-  result
+  (result, addr)
+}
+
+///|
+pub fn Socket::recv_from(
+  self : Socket,
+  buf_size : Int
+) -> (FixedArray[Byte], SockaddrIn)!Failure {
+  guard buf_size > 0 else {
+    fail!("recv_from: buf_size must be greater than 0")
+  }
+  let mut buf : FixedArray[Byte] = FixedArray::make(buf_size, 0)
+  let (len, addr) = self.recv_from_buffer!(buf)
+  if len.to_int() != buf_size {
+    buf = FixedArray::makei(len.to_int(), fn(i) { buf[i] })
+  }
+  (buf, addr)
 }
 
 ///|
