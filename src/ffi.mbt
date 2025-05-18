@@ -237,7 +237,7 @@ pub fn SockaddrIn::set_family(self : SockaddrIn, family : AddrFamily) -> Unit {
   @internal._ffi_sockaddr_in_set_family(self.inner, family.to_u16())
 }
 
-///| TODO: Add binding
+///|
 pub fn SockaddrIn::get_addr(self : SockaddrIn) -> UInt {
   @internal._ffi_sockaddr_in_get_addr(self.inner)
 }
