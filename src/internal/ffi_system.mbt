@@ -3,10 +3,10 @@ extern type FFI_hostent
 
 ///|
 #borrow(hostname)
-pub extern "c" fn gethostbyname(hostname : @ctypes.CString) -> FFI_hostent = "gethostbyname"
+pub extern "c" fn _ffi_gethostbyname(hostname : @ctypes.CString) -> FFI_hostent = "gethostbyname"
 
 ///|
-pub extern "c" fn socket(domain : Int, type_ : Int, protocol : Int) -> Int = "socket"
+pub extern "c" fn _ffi_socket(domain : Int, type_ : Int, protocol : Int) -> Int = "socket"
 
 ///|
 extern type FFI_sockaddr_in

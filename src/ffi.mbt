@@ -83,7 +83,7 @@ struct Hostent {
 ///|
 pub fn get_host_by_name(hostname : String) -> Hostent!Failure {
   let cstr = @ctypes.CString::from_string(hostname)
-  let hostent = @internal.gethostbyname(cstr)
+  let hostent = @internal._ffi_gethostbyname(cstr)
   if hostent.is_null() {
     fail!("gethostbyname failed, hostent is null")
   }
@@ -106,7 +106,7 @@ pub fn new_socket(
   type_ : SocketType,
   protocol : IpProtocol
 ) -> Socket!Failure {
-  let fd = @internal.socket(
+  let fd = @internal._ffi_socket(
     domain.to_u16().to_int(),
     type_.to_u16().to_int(),
     protocol.to_u16().to_int(),
