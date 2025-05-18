@@ -95,3 +95,14 @@ pub fn _ffi_accept(socket_fd : Int, addr : FFI_sockaddr_in) -> Int {
   let addr_len = _ffi_get_sockaddr_in_size().reinterpret_as_uint()
   __ffi_accept_internal(socket_fd, addr, addr_len)
 }
+
+///|
+pub extern "c" fn _ffi_get_errno() -> Int = "__socket_ffi_get_errno"
+
+///|
+extern "c" fn _ffi_stderror_internal(err : Int) -> Bytes = "__socket_ffi_stderror"
+
+///|
+pub fn _ffi_stderror(err : Int) -> String!Failure {
+  @ctypes.CString::from_bytes!(_ffi_stderror_internal(err)).to_string!()
+}

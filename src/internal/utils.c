@@ -1,5 +1,6 @@
 #include <arpa/inet.h>
 #include <ctype.h>
+#include <errno.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,6 +8,14 @@
 #include <unistd.h>
 
 #include "moonbit.h"
+
+moonbit_bytes_t cstr_to_mbt_bytes(char* str) {
+  size_t len = strlen(str);
+  moonbit_bytes_t mbt_bytes =
+      moonbit_make_bytes(len + 1, 0);  // +1 for null terminator
+  memcpy(mbt_bytes, str, len);
+  return mbt_bytes;
+}
 
 MOONBIT_FFI_EXPORT int __socket_ffi_isnullptr(struct moonbit_object* ptr) {
   return ptr == NULL;
@@ -72,12 +81,13 @@ MOONBIT_FFI_EXPORT int __socket_ffi_get_sockaddr_in_size() {
   return sizeof(struct sockaddr_in);
 }
 
-MOONBIT_FFI_EXPORT uint8_t* __socket_ffi_sockaddr_in_get_addr_str(
-    struct sockaddr_in* addr) {
+MOONBIT_FFI_EXPORT moonbit_bytes_t
+__socket_ffi_sockaddr_in_get_addr_str(struct sockaddr_in* addr) {
   char* retval = inet_ntoa(addr->sin_addr);
   size_t retval_length = strlen(retval);
   uint8_t* moonbit_bytes = moonbit_make_bytes(retval_length + 1, 0);
   memcpy(moonbit_bytes, retval, retval_length + 1);  // +1 for null terminator
+  moonbit_incref(moonbit_bytes);
   return moonbit_bytes;
 }
 
@@ -100,4 +110,13 @@ MOONBIT_FFI_EXPORT int __socket_ffi_accept_wrapper(int sockfd,
     perror("accept");
   }
   return new_sockfd;
+}
+
+MOONBIT_FFI_EXPORT int __socket_ffi_get_errno() { return errno; }
+
+MOONBIT_FFI_EXPORT moonbit_bytes_t __socket_ffi_stderror(int err) {
+  char* err_str = strerror(err);
+  moonbit_bytes_t mbt_bytes = cstr_to_mbt_bytes(err_str);
+  moonbit_incref(mbt_bytes);
+  return mbt_bytes;
 }

@@ -112,6 +112,11 @@ pub fn new_socket(
     protocol.to_u16().to_int(),
   )
   if fd < 0 {
+    if fd == -1 {
+      let err = @internal._ffi_get_errno()
+      let err_str = @internal._ffi_stderror!(err)
+      fail!("socket failed: \{err_str}")
+    }
     fail!("socket failed: \{fd}")
   }
   Socket::{ inner: fd }
@@ -121,7 +126,14 @@ pub fn new_socket(
 pub fn Socket::close(self : Socket) -> Unit!Failure {
   let result = @internal._ffi_close(self.inner)
   if result < 0 {
-    fail!("close failed: \{result}")
+    let err_str = if result == -1 {
+      let err = @internal._ffi_get_errno()
+      let err = @internal._ffi_stderror!(err)
+      "close failed: \{err}"
+    } else {
+      "close failed: \{result}"
+    }
+    fail!(err_str)
   }
 }
 
@@ -129,8 +141,15 @@ pub fn Socket::close(self : Socket) -> Unit!Failure {
 pub fn Socket::connect(self : Socket, addr : SockaddrIn) -> Unit!Failure {
   let result = @internal._ffi_connect(self.inner, addr.inner)
   if result < 0 {
+    let err_str = if result == -1 {
+      let err = @internal._ffi_get_errno()
+      let err = @internal._ffi_stderror!(err)
+      "connect failed: \{err}"
+    } else {
+      "connect failed: \{result}"
+    }
     self.close!()
-    fail!("connect failed: \{result}")
+    fail!(err_str)
   }
 }
 
@@ -138,8 +157,15 @@ pub fn Socket::connect(self : Socket, addr : SockaddrIn) -> Unit!Failure {
 pub fn Socket::bind(self : Socket, addr : SockaddrIn) -> Unit!Failure {
   let result = @internal._ffi_bind(self.inner, addr.inner)
   if result < 0 {
+    let err_str = if result == -1 {
+      let err = @internal._ffi_get_errno()
+      let err = @internal._ffi_stderror!(err)
+      "bind failed: \{err}"
+    } else {
+      "bind failed: \{result}"
+    }
     self.close!()
-    fail!("bind failed: \{result}")
+    fail!(err_str)
   }
 }
 
@@ -147,8 +173,15 @@ pub fn Socket::bind(self : Socket, addr : SockaddrIn) -> Unit!Failure {
 pub fn Socket::listen(self : Socket, backlog : Int) -> Unit!Failure {
   let result = @internal._ffi_listen(self.inner, backlog)
   if result < 0 {
+    let err_str = if result == -1 {
+      let err = @internal._ffi_get_errno()
+      let err = @internal._ffi_stderror!(err)
+      "listen failed: \{err}"
+    } else {
+      "listen failed: \{result}"
+    }
     self.close!()
-    fail!("listen failed: \{result}")
+    fail!(err_str)
   }
 }
 
@@ -156,8 +189,15 @@ pub fn Socket::listen(self : Socket, backlog : Int) -> Unit!Failure {
 pub fn Socket::accept(self : Socket, addr : SockaddrIn) -> Socket!Failure {
   let fd = @internal._ffi_accept(self.inner, addr.inner)
   if fd < 0 {
+    let err_str = if fd == -1 {
+      let err = @internal._ffi_get_errno()
+      let err = @internal._ffi_stderror!(err)
+      "accept failed: \{err}"
+    } else {
+      "accept failed: \{fd}"
+    }
     self.close!()
-    fail!("accept failed: \{fd}")
+    fail!(err_str)
   }
   Socket::{ inner: fd }
 }
@@ -193,8 +233,15 @@ pub fn Socket::send[Sendable : Sendable](
 ) -> Int64!Failure {
   let result = sendable.send!(self, flags)
   if result < 0 {
+    let err_str = if result == -1 {
+      let err = @internal._ffi_get_errno()
+      let err = @internal._ffi_stderror!(err)
+      "send failed: \{err}"
+    } else {
+      "send failed: \{result}"
+    }
     self.close!()
-    fail!("send failed: \{result}")
+    fail!(err_str)
   }
   result
 }
@@ -207,8 +254,15 @@ pub fn Socket::recv(
 ) -> Int64!Failure {
   let result = @internal._ffi_recv(self.inner, buf, flags)
   if result < 0 {
+    let err_str = if result == -1 {
+      let err = @internal._ffi_get_errno()
+      let err = @internal._ffi_stderror!(err)
+      "recv failed: \{err}"
+    } else {
+      "recv failed: \{result}"
+    }
     self.close!()
-    fail!("recv failed: \{result}")
+    fail!(err_str)
   }
   result
 }
