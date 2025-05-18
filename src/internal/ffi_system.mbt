@@ -95,4 +95,91 @@ pub fn _ffi_recv(fd : Int, buf : FixedArray[Byte], flags : Int) -> SSIZE_T {
 }
 
 ///|
+#borrow(buf, addr)
+extern "c" fn _ffi_sendto_bytes_internal(
+  fd : Int,
+  buf : Bytes,
+  n : SIZE_T,
+  flags : Int,
+  addr : FFI_sockaddr_in,
+  addr_len : Int
+) -> SSIZE_T = "sendto"
+
+///|
+#borrow(buf, addr)
+extern "c" fn _ffi_sendto_byte_array_internal(
+  fd : Int,
+  buf : FixedArray[Byte],
+  n : SIZE_T,
+  flags : Int,
+  addr : FFI_sockaddr_in,
+  addr_len : Int
+) -> SSIZE_T = "sendto"
+
+///|
+pub fn _ffi_sendto_bytes(
+  fd : Int,
+  buf : Bytes,
+  flags : Int,
+  addr : FFI_sockaddr_in
+) -> SSIZE_T {
+  let addr_len = _ffi_get_sockaddr_in_size()
+  _ffi_sendto_bytes_internal(
+    fd,
+    buf,
+    buf.length().to_uint64(),
+    flags,
+    addr,
+    addr_len,
+  )
+}
+
+///|
+pub fn _ffi_sendto_byte_array(
+  fd : Int,
+  buf : FixedArray[Byte],
+  flags : Int,
+  addr : FFI_sockaddr_in
+) -> SSIZE_T {
+  let addr_len = _ffi_get_sockaddr_in_size()
+  _ffi_sendto_byte_array_internal(
+    fd,
+    buf,
+    buf.length().to_uint64(),
+    flags,
+    addr,
+    addr_len,
+  )
+}
+
+///|
+#borrow(buf, addr)
+extern "c" fn _ffi_recvfrom_internal(
+  fd : Int,
+  buf : FixedArray[Byte],
+  n : SIZE_T,
+  flags : Int,
+  addr : FFI_sockaddr_in,
+  addr_len : Int
+) -> SSIZE_T = "_ffi_recvfrom_internal_wrapper"
+
+///|
+pub fn _ffi_recvfrom(
+  fd : Int,
+  buf : FixedArray[Byte],
+  flags : Int,
+  addr : FFI_sockaddr_in
+) -> SSIZE_T {
+  let addr_len = _ffi_get_sockaddr_in_size()
+  _ffi_recvfrom_internal(
+    fd,
+    buf,
+    buf.length().to_uint64(),
+    flags,
+    addr,
+    addr_len,
+  )
+}
+
+///|
 pub extern "c" fn _ffi_close(fd : Int) -> Int = "close"

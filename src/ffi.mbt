@@ -247,6 +247,54 @@ pub fn Socket::send[Sendable : Sendable](
 }
 
 ///|
+trait SendToAble {
+  send_to(Self, socket : Socket, flags : Int, addr : SockaddrIn) ->
+       Int64!Failure
+}
+
+///|
+pub impl SendToAble for FixedArray[Byte] with send_to(
+  self : FixedArray[Byte],
+  socket : Socket,
+  flags : Int,
+  addr : SockaddrIn
+) -> Int64!Failure {
+  @internal._ffi_sendto_byte_array(socket.inner, self, flags, addr.inner)
+}
+
+///|
+pub impl SendToAble for Bytes with send_to(
+  self : Bytes,
+  socket : Socket,
+  flags : Int,
+  addr : SockaddrIn
+) -> Int64!Failure {
+  @internal._ffi_sendto_bytes(socket.inner, self, flags, addr.inner)
+}
+
+///|
+pub fn Socket::send_to[SendToAble : SendToAble](
+  self : Socket,
+  sendable : SendToAble,
+  flags : Int,
+  addr : SockaddrIn
+) -> Int64!Failure {
+  let result = sendable.send_to!(self, flags, addr)
+  if result < 0 {
+    let err_str = if result == -1 {
+      let err = @internal._ffi_get_errno()
+      let err = @internal._ffi_stderror!(err)
+      "sendto failed: \{err}"
+    } else {
+      "sendto failed: \{result}"
+    }
+    self.close!()
+    fail!(err_str)
+  }
+  result
+}
+
+///|
 pub fn Socket::recv(
   self : Socket,
   buf : FixedArray[Byte],
@@ -260,6 +308,28 @@ pub fn Socket::recv(
       "recv failed: \{err}"
     } else {
       "recv failed: \{result}"
+    }
+    self.close!()
+    fail!(err_str)
+  }
+  result
+}
+
+///|
+pub fn Socket::recv_from(
+  self : Socket,
+  buf : FixedArray[Byte],
+  flags : Int,
+  addr : SockaddrIn
+) -> Int64!Failure {
+  let result = @internal._ffi_recvfrom(self.inner, buf, flags, addr.inner)
+  if result < 0 {
+    let err_str = if result == -1 {
+      let err = @internal._ffi_get_errno()
+      let err = @internal._ffi_stderror!(err)
+      "recvfrom failed: \{err}"
+    } else {
+      "recvfrom failed: \{result}"
     }
     self.close!()
     fail!(err_str)

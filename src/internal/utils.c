@@ -112,6 +112,15 @@ MOONBIT_FFI_EXPORT int __socket_ffi_accept_wrapper(int sockfd,
   return new_sockfd;
 }
 
+MOONBIT_FFI_EXPORT ssize_t
+_ffi_recvfrom_internal_wrapper(int sockfd, void* buf, size_t len, int flags,
+                               struct sockaddr_in* addr, uint32_t addrlen) {
+  u_int32_t* addrlen_ptr = &addrlen;
+  ssize_t bytes_received =
+      recvfrom(sockfd, buf, len, flags, (struct sockaddr*)addr, addrlen_ptr);
+  return bytes_received;
+}
+
 MOONBIT_FFI_EXPORT int __socket_ffi_get_errno() { return errno; }
 
 MOONBIT_FFI_EXPORT moonbit_bytes_t __socket_ffi_stderror(int err) {
