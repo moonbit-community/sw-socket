@@ -81,6 +81,12 @@ struct Hostent {
 }
 
 ///|
+pub fn Hostent::get_addr_str(self : Hostent) -> String!Failure {
+  let addr = @internal._ffi_hostent_get_addr_str(self.inner)
+  @ctypes.CString::from_bytes!(addr).to_string!()
+}
+
+///|
 pub fn get_host_by_name(hostname : String) -> Hostent!Failure {
   let cstr = @ctypes.CString::from_string(hostname)
   let hostent = @internal._ffi_gethostbyname(cstr)

@@ -82,6 +82,16 @@ MOONBIT_FFI_EXPORT int __socket_ffi_get_sockaddr_in_size() {
 }
 
 MOONBIT_FFI_EXPORT moonbit_bytes_t
+__socket_ffi_hostent_get_addr_str(struct hostent* host) {
+  char* addr_str = inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
+  size_t addr_str_length = strlen(addr_str);
+  moonbit_bytes_t mbt_bytes = moonbit_make_bytes(addr_str_length + 1, 0);
+  memcpy(mbt_bytes, addr_str, addr_str_length + 1);  // +1 for null terminator
+  moonbit_incref(mbt_bytes);
+  return mbt_bytes;
+}
+
+MOONBIT_FFI_EXPORT moonbit_bytes_t
 __socket_ffi_sockaddr_in_get_addr_str(struct sockaddr_in* addr) {
   char* retval = inet_ntoa(addr->sin_addr);
   size_t retval_length = strlen(retval);

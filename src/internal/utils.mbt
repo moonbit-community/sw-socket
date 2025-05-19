@@ -70,6 +70,10 @@ pub extern "c" fn _ffi_sockaddr_in_set_port(
 ) -> Unit = "__socket_ffi_sockaddr_in_set_port"
 
 ///|
+#borrow(hostent)
+pub extern "c" fn _ffi_hostent_get_addr_str(hostent : FFI_hostent) -> Bytes = "__socket_ffi_hostent_get_addr_str"
+
+///|
 #borrow(addr)
 pub extern "c" fn _ffi_sockaddr_in_get_addr_str(
   addr : FFI_sockaddr_in
