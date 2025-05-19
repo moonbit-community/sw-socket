@@ -27,13 +27,14 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          moon test --enable-coverage
+          moon test --enable-coverage --target native
 
       - name: Generate and upload coverage report
         run: |
           moon coverage report \
             -f coveralls \
             -o codecov_report.json \
+            --target native \
             --service-name github \
             --service-job-id "$GITHUB_RUN_ID" \
             --service-pull-request "${{ github.event.pull_request.number }}" \
