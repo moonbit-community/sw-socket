@@ -1,0 +1,82 @@
+package "ShellWen/sw_socket/internal"
+
+import(
+  "ShellWen/sw_socket/ctypes"
+)
+
+// Values
+fn _ffi_accept(Int, FFI_sockaddr_in) -> Int
+
+fn _ffi_bind(Int, FFI_sockaddr_in) -> Int
+
+#deprecated
+fn _ffi_build_sockaddr_in(FFI_hostent, Int) -> FFI_sockaddr_in
+
+fn _ffi_close(Int) -> Int
+
+fn _ffi_connect(Int, FFI_sockaddr_in) -> Int
+
+fn _ffi_get_errno() -> Int
+
+fn _ffi_get_sockaddr_in_size() -> Int
+
+fn _ffi_gethostbyname(@ctypes.CString) -> FFI_hostent
+
+fn _ffi_hostent_get_addr(FFI_hostent) -> UInt
+
+fn _ffi_hostent_get_addr_str(FFI_hostent) -> Bytes
+
+fn _ffi_listen(Int, Int) -> Int
+
+fn _ffi_new_sockaddr_in() -> FFI_sockaddr_in
+
+fn _ffi_recv(Int, FixedArray[Byte], Int) -> Int64
+
+fn _ffi_recvfrom(Int, FixedArray[Byte], Int, FFI_sockaddr_in) -> Int64
+
+fn _ffi_send_byte_array(Int, FixedArray[Byte], Int) -> Int64
+
+fn _ffi_send_bytes(Int, Bytes, Int) -> Int64
+
+fn _ffi_sendto_byte_array(Int, FixedArray[Byte], Int, FFI_sockaddr_in) -> Int64
+
+fn _ffi_sendto_bytes(Int, Bytes, Int, FFI_sockaddr_in) -> Int64
+
+fn _ffi_sockaddr_in_get_addr(FFI_sockaddr_in) -> UInt
+
+fn _ffi_sockaddr_in_get_addr_str(FFI_sockaddr_in) -> @ctypes.CString
+
+fn _ffi_sockaddr_in_get_family(FFI_sockaddr_in) -> UInt16
+
+fn _ffi_sockaddr_in_get_port(FFI_sockaddr_in) -> UInt16
+
+fn _ffi_sockaddr_in_set_addr(FFI_sockaddr_in, UInt) -> Unit
+
+fn _ffi_sockaddr_in_set_addr_str(FFI_sockaddr_in, @ctypes.CString) -> UInt
+
+fn _ffi_sockaddr_in_set_family(FFI_sockaddr_in, UInt16) -> Unit
+
+fn _ffi_sockaddr_in_set_port(FFI_sockaddr_in, UInt16) -> Unit
+
+fn _ffi_socket(Int, Int, Int) -> Int
+
+fn _ffi_stderror(Int) -> String!Failure
+
+fn is_null_hostent(FFI_hostent) -> Bool
+
+fn is_null_sockaddr(FFI_sockaddr_in) -> Bool
+
+// Types and methods
+type FFI_hostent
+impl Nullptr for FFI_hostent
+
+type FFI_sockaddr_in
+impl Nullptr for FFI_sockaddr_in
+
+// Type aliases
+
+// Traits
+pub trait Nullptr {
+  is_null(Self) -> Bool
+}
+
