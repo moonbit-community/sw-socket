@@ -6,13 +6,12 @@ package "ShellWen/sw_socket/ctypes"
 pub type CString Bytes
 impl CString {
   as_bytes(Self) -> Bytes
-  from_bytes(Bytes) -> Self!Failure
+  from_bytes(Bytes) -> Self raise Failure
   from_string(String) -> Self
   strlen(Self) -> UInt64
-  to_string(Self) -> String!Failure
+  to_string(Self) -> String raise Failure
 }
 
 // Type aliases
 
 // Traits
-
