@@ -6,7 +6,7 @@ pub(all) enum AddrFamily {
 }
 
 ///|
-fn AddrFamily::from_u16(value : UInt16) -> AddrFamily raise Failure {
+pub fn AddrFamily::from_u16(value : UInt16) -> AddrFamily raise Failure {
   match value {
     2 => AddrFamily::AF_INET
     // 10 => AddrFamily::AF_INET6
@@ -15,7 +15,7 @@ fn AddrFamily::from_u16(value : UInt16) -> AddrFamily raise Failure {
 }
 
 ///|
-fn AddrFamily::to_u16(self : AddrFamily) -> UInt16 {
+pub fn AddrFamily::to_u16(self : AddrFamily) -> UInt16 {
   match self {
     AddrFamily::AF_INET => 2
     // AddrFamily::AF_INET6 => 10
@@ -30,7 +30,7 @@ pub(all) enum SocketType {
 }
 
 ///|
-fn SocketType::from_u16(value : UInt16) -> SocketType raise Failure {
+pub fn SocketType::from_u16(value : UInt16) -> SocketType raise Failure {
   match value {
     1 => SocketType::SOCK_STREAM
     2 => SocketType::SOCK_DGRAM
@@ -39,7 +39,7 @@ fn SocketType::from_u16(value : UInt16) -> SocketType raise Failure {
 }
 
 ///|
-fn SocketType::to_u16(self : SocketType) -> UInt16 {
+pub fn SocketType::to_u16(self : SocketType) -> UInt16 {
   match self {
     SocketType::SOCK_STREAM => 1
     SocketType::SOCK_DGRAM => 2
@@ -55,7 +55,7 @@ pub(all) enum IpProtocol {
 }
 
 ///|
-fn IpProtocol::from_u16(value : UInt16) -> IpProtocol raise Failure {
+pub fn IpProtocol::from_u16(value : UInt16) -> IpProtocol raise Failure {
   match value {
     0 => IpProtocol::IPPROTO_IP
     6 => IpProtocol::IPPROTO_TCP
@@ -65,7 +65,7 @@ fn IpProtocol::from_u16(value : UInt16) -> IpProtocol raise Failure {
 }
 
 ///|
-fn IpProtocol::to_u16(self : IpProtocol) -> UInt16 {
+pub fn IpProtocol::to_u16(self : IpProtocol) -> UInt16 {
   match self {
     IpProtocol::IPPROTO_IP => 0
     IpProtocol::IPPROTO_TCP => 6
@@ -113,12 +113,10 @@ pub fn new_socket(
   type_ : SocketType,
   protocol~ : IpProtocol? = None
 ) -> Socket raise Failure {
-  let protocol = protocol.or_else(() => {
-    match type_ {
-      SocketType::SOCK_STREAM => IpProtocol::IPPROTO_TCP
-      SocketType::SOCK_DGRAM => IpProtocol::IPPROTO_UDP
-    }
-  });
+  let protocol = protocol.or_else(() => match type_ {
+    SocketType::SOCK_STREAM => IpProtocol::IPPROTO_TCP
+    SocketType::SOCK_DGRAM => IpProtocol::IPPROTO_UDP
+  })
   let fd = @internal._ffi_socket(
     domain.to_u16().to_int(),
     type_.to_u16().to_int(),

@@ -31,10 +31,10 @@ pub fn CString::from_string(string : String) -> CString {
 ///|
 pub fn CString::to_string(self : CString) -> String raise Failure {
   let CString(inner) = self
-  @encoding.decode?(
+  let decoder = @encoding.decoder(UTF8)
+  (try?(decoder.decode(
     inner[:-1], // exclude the null terminator
-    encoding=UTF8,
-  )
+  )))
   .map_err(fn(err) { Failure("Failed to decode CString: \{err}") })
   .unwrap_or_error()
 }
