@@ -6,7 +6,7 @@ pub(all) enum AddrFamily {
 }
 
 ///|
-pub fn AddrFamily::from_u16(value : UInt16) -> AddrFamily raise Failure {
+fn AddrFamily::from_u16(value : UInt16) -> AddrFamily raise Failure {
   match value {
     2 => AddrFamily::AF_INET
     // 10 => AddrFamily::AF_INET6
@@ -15,7 +15,7 @@ pub fn AddrFamily::from_u16(value : UInt16) -> AddrFamily raise Failure {
 }
 
 ///|
-pub fn AddrFamily::to_u16(self : AddrFamily) -> UInt16 {
+fn AddrFamily::to_u16(self : AddrFamily) -> UInt16 {
   match self {
     AddrFamily::AF_INET => 2
     // AddrFamily::AF_INET6 => 10
@@ -29,17 +29,18 @@ pub(all) enum SocketType {
   // other types are not supported
 }
 
-///|
-pub fn SocketType::from_u16(value : UInt16) -> SocketType raise Failure {
-  match value {
-    1 => SocketType::SOCK_STREAM
-    2 => SocketType::SOCK_DGRAM
-    _ => fail("Unsupported socket type: \{value}")
-  }
-}
+///| 
+/// TODO: comment this code to ignore warning checking
+// fn SocketType::from_u16(value : UInt16) -> SocketType raise Failure {
+//   match value {
+//     1 => SocketType::SOCK_STREAM
+//     2 => SocketType::SOCK_DGRAM
+//     _ => fail("Unsupported socket type: \{value}")
+//   }
+// }
 
 ///|
-pub fn SocketType::to_u16(self : SocketType) -> UInt16 {
+fn SocketType::to_u16(self : SocketType) -> UInt16 {
   match self {
     SocketType::SOCK_STREAM => 1
     SocketType::SOCK_DGRAM => 2
@@ -55,17 +56,18 @@ pub(all) enum IpProtocol {
 }
 
 ///|
-pub fn IpProtocol::from_u16(value : UInt16) -> IpProtocol raise Failure {
-  match value {
-    0 => IpProtocol::IPPROTO_IP
-    6 => IpProtocol::IPPROTO_TCP
-    17 => IpProtocol::IPPROTO_UDP
-    _ => fail("Unsupported IP protocol: \{value}")
-  }
-}
+// TODO: comment this code to ignore warning checking
+// fn IpProtocol::from_u16(value : UInt16) -> IpProtocol raise Failure {
+//   match value {
+//     0 => IpProtocol::IPPROTO_IP
+//     6 => IpProtocol::IPPROTO_TCP
+//     17 => IpProtocol::IPPROTO_UDP
+//     _ => fail("Unsupported IP protocol: \{value}")
+//   }
+// }
 
 ///|
-pub fn IpProtocol::to_u16(self : IpProtocol) -> UInt16 {
+fn IpProtocol::to_u16(self : IpProtocol) -> UInt16 {
   match self {
     IpProtocol::IPPROTO_IP => 0
     IpProtocol::IPPROTO_TCP => 6
@@ -113,10 +115,11 @@ pub fn new_socket(
   type_ : SocketType,
   protocol~ : IpProtocol? = None
 ) -> Socket raise Failure {
-  let protocol = protocol.or_else(() => match type_ {
-    SocketType::SOCK_STREAM => IpProtocol::IPPROTO_TCP
-    SocketType::SOCK_DGRAM => IpProtocol::IPPROTO_UDP
-  })
+  let protocol = match (protocol, type_) {
+    (Some(p), _) => p
+    (None, SocketType::SOCK_STREAM) => IpProtocol::IPPROTO_TCP
+    (None, SocketType::SOCK_DGRAM) => IpProtocol::IPPROTO_UDP
+  }
   let fd = @internal._ffi_socket(
     domain.to_u16().to_int(),
     type_.to_u16().to_int(),
@@ -317,9 +320,9 @@ pub impl SendToAble for Bytes with send_to(
 }
 
 ///|
-pub fn[SendToAble : SendToAble] Socket::send_to(
+pub fn[S : SendToAble] Socket::send_to(
   self : Socket,
-  sendable : SendToAble,
+  sendable : S,
   addr : SockaddrIn,
   flags~ : Int = 0x800 // MSG_CONFIRM
 ) -> Int64 raise Failure {
