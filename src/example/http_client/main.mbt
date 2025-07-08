@@ -49,7 +49,7 @@ fn wrapped_main() -> Unit raise Failure {
 
 ///|
 fn main {
-  (try?(wrapped_main()))
+  (try? wrapped_main())
   .map_err(fn(e) {
     println("Error: \{e}")
     e

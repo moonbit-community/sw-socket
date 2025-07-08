@@ -60,7 +60,7 @@ fn _ffi_sockaddr_in_set_port(FFI_sockaddr_in, UInt16) -> Unit
 
 fn _ffi_socket(Int, Int, Int) -> Int
 
-fn _ffi_stderror(Int) -> String!Failure
+fn _ffi_stderror(Int) -> String raise Failure
 
 fn is_null_hostent(FFI_hostent) -> Bool
 

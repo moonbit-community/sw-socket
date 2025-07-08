@@ -1,11 +1,11 @@
 package "ShellWen/sw_socket"
 
 // Values
-fn get_host_by_name(String) -> Hostent!Failure
+fn get_host_by_name(String) -> Hostent raise Failure
 
-fn new_sockaddr_in() -> SockaddrIn!Failure
+fn new_sockaddr_in() -> SockaddrIn raise Failure
 
-fn new_socket(AddrFamily, SocketType, protocol~ : IpProtocol? = ..) -> Socket!Failure
+fn new_socket(AddrFamily, SocketType, protocol~ : IpProtocol? = ..) -> Socket raise Failure
 
 // Types and methods
 pub(all) enum AddrFamily {
@@ -13,10 +13,8 @@ pub(all) enum AddrFamily {
 }
 
 type Hostent
-impl Hostent {
-  get_addr(Self) -> UInt
-  get_addr_str(Self) -> String!Failure
-}
+fn Hostent::get_addr(Self) -> UInt
+fn Hostent::get_addr_str(Self) -> String raise Failure
 
 pub(all) enum IpProtocol {
   IPPROTO_IP
@@ -25,33 +23,29 @@ pub(all) enum IpProtocol {
 }
 
 type SockaddrIn
-impl SockaddrIn {
-  get_addr(Self) -> UInt
-  get_addr_str(Self) -> String!Failure
-  get_family(Self) -> AddrFamily!Failure
-  get_port(Self) -> UInt16
-  set_addr(Self, UInt) -> Unit
-  set_addr_str(Self, String) -> Unit!Failure
-  set_family(Self, AddrFamily) -> Unit
-  set_port(Self, UInt16) -> Unit
-}
+fn SockaddrIn::get_addr(Self) -> UInt
+fn SockaddrIn::get_addr_str(Self) -> String raise Failure
+fn SockaddrIn::get_family(Self) -> AddrFamily raise Failure
+fn SockaddrIn::get_port(Self) -> UInt16
+fn SockaddrIn::set_addr(Self, UInt) -> Unit
+fn SockaddrIn::set_addr_str(Self, String) -> Unit raise Failure
+fn SockaddrIn::set_family(Self, AddrFamily) -> Unit
+fn SockaddrIn::set_port(Self, UInt16) -> Unit
 
 type Socket
-impl Socket {
-  accept(Self) -> (Self, SockaddrIn)!Failure
-  bind(Self, String, UInt16) -> SockaddrIn!Failure
-  bind_addr(Self, SockaddrIn) -> Unit!Failure
-  close(Self) -> Unit!Failure
-  connect(Self, Hostent, UInt16) -> SockaddrIn!Failure
-  connect_addr(Self, SockaddrIn) -> Unit!Failure
-  listen(Self, Int) -> Unit!Failure
-  recv(Self, Int) -> FixedArray[Byte]!Failure
-  recv_buffer(Self, FixedArray[Byte], flags~ : Int = ..) -> Int64!Failure
-  recv_from(Self, Int) -> (FixedArray[Byte], SockaddrIn)!Failure
-  recv_from_buffer(Self, FixedArray[Byte], flags~ : Int = ..) -> (Int64, SockaddrIn)!Failure
-  send[Sendable : Sendable](Self, Sendable, flags~ : Int = ..) -> Int64!Failure
-  send_to[SendToAble : SendToAble](Self, SendToAble, SockaddrIn, flags~ : Int = ..) -> Int64!Failure
-}
+fn Socket::accept(Self) -> (Self, SockaddrIn) raise Failure
+fn Socket::bind(Self, String, UInt16) -> SockaddrIn raise Failure
+fn Socket::bind_addr(Self, SockaddrIn) -> Unit raise Failure
+fn Socket::close(Self) -> Unit raise Failure
+fn Socket::connect(Self, Hostent, UInt16) -> SockaddrIn raise Failure
+fn Socket::connect_addr(Self, SockaddrIn) -> Unit raise Failure
+fn Socket::listen(Self, Int) -> Unit raise Failure
+fn Socket::recv(Self, Int) -> FixedArray[Byte] raise Failure
+fn Socket::recv_buffer(Self, FixedArray[Byte], flags~ : Int = ..) -> Int64 raise Failure
+fn Socket::recv_from(Self, Int) -> (FixedArray[Byte], SockaddrIn) raise Failure
+fn Socket::recv_from_buffer(Self, FixedArray[Byte], flags~ : Int = ..) -> (Int64, SockaddrIn) raise Failure
+fn[Sendable : Sendable] Socket::send(Self, Sendable, flags~ : Int = ..) -> Int64 raise Failure
+fn[S : SendToAble] Socket::send_to(Self, S, SockaddrIn, flags~ : Int = ..) -> Int64 raise Failure
 
 pub(all) enum SocketType {
   SOCK_STREAM

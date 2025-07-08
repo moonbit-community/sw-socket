@@ -49,7 +49,7 @@ typealias UInt64 as SIZE_T
 
 ///|
 typealias Int64 as SSIZE_T
- 
+
 ///|
 #borrow(buf)
 extern "c" fn _ffi_send_byte_array_internal(
