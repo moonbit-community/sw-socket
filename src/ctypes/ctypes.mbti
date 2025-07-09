@@ -4,13 +4,12 @@ package "ShellWen/sw_socket/ctypes"
 
 // Types and methods
 pub type CString Bytes
-impl CString {
-  as_bytes(Self) -> Bytes
-  from_bytes(Bytes) -> Self!Failure
-  from_string(String) -> Self
-  strlen(Self) -> UInt64
-  to_string(Self) -> String!Failure
-}
+fn CString::as_bytes(Self) -> Bytes
+fn CString::from_bytes(Bytes) -> Self raise Failure
+fn CString::from_string(String) -> Self
+fn CString::inner(Self) -> Bytes
+fn CString::strlen(Self) -> UInt64
+fn CString::to_string(Self) -> String raise Failure
 
 // Type aliases
 

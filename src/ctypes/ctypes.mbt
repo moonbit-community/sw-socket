@@ -8,12 +8,12 @@ pub fn CString::as_bytes(self : CString) -> Bytes {
 }
 
 ///|
-pub fn CString::from_bytes(bytes : Bytes) -> CString!Failure {
+pub fn CString::from_bytes(bytes : Bytes) -> CString raise Failure {
   if bytes.length() == 0 {
-    fail!("CString cannot be empty")
+    fail("CString cannot be empty")
   }
   if bytes[bytes.length() - 1] != 0 {
-    fail!("CString must be null terminated")
+    fail("CString must be null terminated")
   }
   CString(bytes)
 }
@@ -29,14 +29,14 @@ pub fn CString::from_string(string : String) -> CString {
 }
 
 ///|
-pub fn CString::to_string(self : CString) -> String!Failure {
+pub fn CString::to_string(self : CString) -> String raise Failure {
   let CString(inner) = self
-  @encoding.decode?(
+  let decoder = @encoding.decoder(UTF8)
+  (try? decoder.decode(
     inner[:-1], // exclude the null terminator
-    encoding=UTF8,
-  )
+  ))
   .map_err(fn(err) { Failure("Failed to decode CString: \{err}") })
-  .unwrap_or_error!()
+  .unwrap_or_error()
 }
 
 ///|

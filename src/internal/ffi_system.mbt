@@ -1,5 +1,10 @@
 ///|
-extern type FFI_hostent
+#external
+type FFI_hostent
+
+///|
+#external
+type FFI_sockaddr_in
 
 ///|
 #borrow(hostname)
@@ -7,9 +12,6 @@ pub extern "c" fn _ffi_gethostbyname(hostname : @ctypes.CString) -> FFI_hostent 
 
 ///|
 pub extern "c" fn _ffi_socket(domain : Int, type_ : Int, protocol : Int) -> Int = "socket"
-
-///|
-extern type FFI_sockaddr_in
 
 ///|
 #borrow(addr)
@@ -43,10 +45,10 @@ pub fn _ffi_bind(socket_fd : Int, addr : FFI_sockaddr_in) -> Int {
 pub extern "c" fn _ffi_listen(socket_fd : Int, backlog : Int) -> Int = "listen"
 
 ///|
-typealias SIZE_T = UInt64
+typealias UInt64 as SIZE_T
 
 ///|
-typealias SSIZE_T = Int64
+typealias Int64 as SSIZE_T
 
 ///|
 #borrow(buf)
