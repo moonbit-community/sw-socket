@@ -18,7 +18,7 @@ pub extern "c" fn _ffi_socket(domain : Int, type_ : Int, protocol : Int) -> Int 
 extern "c" fn _ffi_connect_internal(
   socket_fd : Int,
   addr : FFI_sockaddr_in,
-  addr_len : Int
+  addr_len : Int,
 ) -> Int = "connect"
 
 ///|
@@ -32,7 +32,7 @@ pub fn _ffi_connect(socket_fd : Int, addr : FFI_sockaddr_in) -> Int {
 extern "c" fn _ffi_bind_internal(
   socket_fd : Int,
   addr : FFI_sockaddr_in,
-  addr_len : Int
+  addr_len : Int,
 ) -> Int = "bind"
 
 ///|
@@ -56,7 +56,7 @@ extern "c" fn _ffi_send_byte_array_internal(
   fd : Int,
   buf : FixedArray[Byte],
   n : SIZE_T,
-  flags : Int
+  flags : Int,
 ) -> SSIZE_T = "send"
 
 ///|
@@ -65,14 +65,14 @@ extern "c" fn _ffi_send_bytes_internal(
   fd : Int,
   buf : Bytes,
   n : SIZE_T,
-  flags : Int
+  flags : Int,
 ) -> SSIZE_T = "send"
 
 ///|
 pub fn _ffi_send_byte_array(
   fd : Int,
   buf : FixedArray[Byte],
-  flags : Int
+  flags : Int,
 ) -> SSIZE_T {
   _ffi_send_byte_array_internal(fd, buf, buf.length().to_uint64(), flags)
 }
@@ -88,7 +88,7 @@ extern "c" fn _ffi_recv_internal(
   fd : Int,
   buf : FixedArray[Byte],
   n : SIZE_T,
-  flags : Int
+  flags : Int,
 ) -> SSIZE_T = "recv"
 
 ///|
@@ -104,7 +104,7 @@ extern "c" fn _ffi_sendto_bytes_internal(
   n : SIZE_T,
   flags : Int,
   addr : FFI_sockaddr_in,
-  addr_len : Int
+  addr_len : Int,
 ) -> SSIZE_T = "sendto"
 
 ///|
@@ -115,7 +115,7 @@ extern "c" fn _ffi_sendto_byte_array_internal(
   n : SIZE_T,
   flags : Int,
   addr : FFI_sockaddr_in,
-  addr_len : Int
+  addr_len : Int,
 ) -> SSIZE_T = "sendto"
 
 ///|
@@ -123,7 +123,7 @@ pub fn _ffi_sendto_bytes(
   fd : Int,
   buf : Bytes,
   flags : Int,
-  addr : FFI_sockaddr_in
+  addr : FFI_sockaddr_in,
 ) -> SSIZE_T {
   let addr_len = _ffi_get_sockaddr_in_size()
   _ffi_sendto_bytes_internal(
@@ -141,7 +141,7 @@ pub fn _ffi_sendto_byte_array(
   fd : Int,
   buf : FixedArray[Byte],
   flags : Int,
-  addr : FFI_sockaddr_in
+  addr : FFI_sockaddr_in,
 ) -> SSIZE_T {
   let addr_len = _ffi_get_sockaddr_in_size()
   _ffi_sendto_byte_array_internal(
@@ -162,7 +162,7 @@ extern "c" fn _ffi_recvfrom_internal(
   n : SIZE_T,
   flags : Int,
   addr : FFI_sockaddr_in,
-  addr_len : Int
+  addr_len : Int,
 ) -> SSIZE_T = "_ffi_recvfrom_internal_wrapper"
 
 ///|
@@ -170,7 +170,7 @@ pub fn _ffi_recvfrom(
   fd : Int,
   buf : FixedArray[Byte],
   flags : Int,
-  addr : FFI_sockaddr_in
+  addr : FFI_sockaddr_in,
 ) -> SSIZE_T {
   let addr_len = _ffi_get_sockaddr_in_size()
   _ffi_recvfrom_internal(
