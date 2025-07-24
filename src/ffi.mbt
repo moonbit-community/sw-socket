@@ -113,7 +113,7 @@ struct Socket {
 pub fn new_socket(
   domain : AddrFamily,
   type_ : SocketType,
-  protocol~ : IpProtocol? = None
+  protocol~ : IpProtocol? = None,
 ) -> Socket raise Failure {
   let protocol = match (protocol, type_) {
     (Some(p), _) => p
@@ -154,7 +154,7 @@ pub fn Socket::close(self : Socket) -> Unit raise Failure {
 ///|
 pub fn Socket::connect_addr(
   self : Socket,
-  addr : SockaddrIn
+  addr : SockaddrIn,
 ) -> Unit raise Failure {
   let result = @internal._ffi_connect(self.inner, addr.inner)
   if result < 0 {
@@ -174,7 +174,7 @@ pub fn Socket::connect_addr(
 pub fn Socket::connect(
   self : Socket,
   addr : Hostent,
-  port : UInt16
+  port : UInt16,
 ) -> SockaddrIn raise Failure {
   let sockaddr_in = new_sockaddr_in()
   sockaddr_in
@@ -188,7 +188,7 @@ pub fn Socket::connect(
 ///|
 pub fn Socket::bind_addr(
   self : Socket,
-  addr : SockaddrIn
+  addr : SockaddrIn,
 ) -> Unit raise Failure {
   let result = @internal._ffi_bind(self.inner, addr.inner)
   if result < 0 {
@@ -208,7 +208,7 @@ pub fn Socket::bind_addr(
 pub fn Socket::bind(
   self : Socket,
   addr : String,
-  port : UInt16
+  port : UInt16,
 ) -> SockaddrIn raise Failure {
   let sockaddr_in = new_sockaddr_in()
   sockaddr_in..set_family(self.domain)..set_addr_str(addr)..set_port(port)
@@ -259,7 +259,7 @@ trait Sendable {
 pub impl Sendable for FixedArray[Byte] with send(
   self : FixedArray[Byte],
   socket : Socket,
-  flags : Int
+  flags : Int,
 ) -> Int64 raise Failure {
   @internal._ffi_send_byte_array(socket.inner, self, flags)
 }
@@ -268,7 +268,7 @@ pub impl Sendable for FixedArray[Byte] with send(
 pub impl Sendable for Bytes with send(
   self : Bytes,
   socket : Socket,
-  flags : Int
+  flags : Int,
 ) -> Int64 raise Failure {
   @internal._ffi_send_bytes(socket.inner, self, flags)
 }
@@ -277,7 +277,7 @@ pub impl Sendable for Bytes with send(
 pub fn[Sendable : Sendable] Socket::send(
   self : Socket,
   sendable : Sendable,
-  flags~ : Int = 0
+  flags~ : Int = 0,
 ) -> Int64 raise Failure {
   let result = sendable.send(self, flags)
   if result < 0 {
@@ -304,7 +304,7 @@ pub impl SendToAble for FixedArray[Byte] with send_to(
   self : FixedArray[Byte],
   socket : Socket,
   flags : Int,
-  addr : SockaddrIn
+  addr : SockaddrIn,
 ) -> Int64 raise Failure {
   @internal._ffi_sendto_byte_array(socket.inner, self, flags, addr.inner)
 }
@@ -314,7 +314,7 @@ pub impl SendToAble for Bytes with send_to(
   self : Bytes,
   socket : Socket,
   flags : Int,
-  addr : SockaddrIn
+  addr : SockaddrIn,
 ) -> Int64 raise Failure {
   @internal._ffi_sendto_bytes(socket.inner, self, flags, addr.inner)
 }
@@ -324,7 +324,7 @@ pub fn[S : SendToAble] Socket::send_to(
   self : Socket,
   sendable : S,
   addr : SockaddrIn,
-  flags~ : Int = 0x800 // MSG_CONFIRM
+  flags~ : Int = 0x800, // MSG_CONFIRM
 ) -> Int64 raise Failure {
   let result = sendable.send_to(self, flags, addr)
   if result < 0 {
@@ -345,7 +345,7 @@ pub fn[S : SendToAble] Socket::send_to(
 pub fn Socket::recv_buffer(
   self : Socket,
   buf : FixedArray[Byte],
-  flags~ : Int = 0
+  flags~ : Int = 0,
 ) -> Int64 raise Failure {
   let result = @internal._ffi_recv(self.inner, buf, flags)
   if result < 0 {
@@ -365,7 +365,7 @@ pub fn Socket::recv_buffer(
 ///|
 pub fn Socket::recv(
   self : Socket,
-  buf_size : Int
+  buf_size : Int,
 ) -> FixedArray[Byte] raise Failure {
   guard buf_size > 0 else { fail("recv: buf_size must be greater than 0") }
   let mut buf : FixedArray[Byte] = FixedArray::make(buf_size, (0).to_byte())
@@ -380,7 +380,7 @@ pub fn Socket::recv(
 pub fn Socket::recv_from_buffer(
   self : Socket,
   buf : FixedArray[Byte],
-  flags~ : Int = 0x100 // MSG_WAITALL
+  flags~ : Int = 0x100, // MSG_WAITALL
 ) -> (Int64, SockaddrIn) raise Failure {
   let addr = new_sockaddr_in()
   let result = @internal._ffi_recvfrom(self.inner, buf, flags, addr.inner)
@@ -401,7 +401,7 @@ pub fn Socket::recv_from_buffer(
 ///|
 pub fn Socket::recv_from(
   self : Socket,
-  buf_size : Int
+  buf_size : Int,
 ) -> (FixedArray[Byte], SockaddrIn) raise Failure {
   guard buf_size > 0 else { fail("recv_from: buf_size must be greater than 0") }
   let mut buf : FixedArray[Byte] = FixedArray::make(buf_size, 0)
@@ -465,7 +465,7 @@ pub fn SockaddrIn::get_addr_str(self : SockaddrIn) -> String raise Failure {
 ///|
 pub fn SockaddrIn::set_addr_str(
   self : SockaddrIn,
-  addr : String
+  addr : String,
 ) -> Unit raise Failure {
   let cstr = @ctypes.CString::from_string(addr)
   let retval = @internal._ffi_sockaddr_in_set_addr_str(self.inner, cstr)
