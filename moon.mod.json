@@ -9,5 +9,6 @@
   "license": "Apache-2.0",
   "keywords": ["socket", "network", "tcp", "udp", "moonbit"],
   "description": "A experimental *nix socket binding for MoonBit.",
-  "source": "src"
+  "source": "src",
+  "preferred-target": "native"
 }
