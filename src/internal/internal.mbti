@@ -1,3 +1,4 @@
+// Generated using `moon info`, DON'T EDIT IT
 package "ShellWen/sw_socket/internal"
 
 import(
@@ -65,6 +66,8 @@ fn _ffi_stderror(Int) -> String raise Failure
 fn is_null_hostent(FFI_hostent) -> Bool
 
 fn is_null_sockaddr(FFI_sockaddr_in) -> Bool
+
+// Errors
 
 // Types and methods
 type FFI_hostent
