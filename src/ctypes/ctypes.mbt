@@ -1,5 +1,5 @@
 ///|
-pub type CString Bytes
+pub struct CString(Bytes)
 
 ///|
 pub fn CString::as_bytes(self : CString) -> Bytes {
@@ -12,18 +12,14 @@ pub fn CString::from_bytes(bytes : Bytes) -> CString raise Failure {
   if bytes.length() == 0 {
     fail("CString cannot be empty")
   }
-  if bytes[bytes.length() - 1] != 0 {
-    fail("CString must be null terminated")
-  }
   CString(bytes)
 }
 
 ///|
 pub fn CString::from_string(string : String) -> CString {
-  let size_hint = string.length() * 4 + 1 // MoonBit String is UTF-16, so 4 bytes per char max, and add 1 for null terminator
+  let size_hint = string.length() * 4 // MoonBit String is UTF-16, so 4 bytes per char max
   let buf = @buffer.new(size_hint~)
   @encoding.encode_to(string, buf, encoding=UTF8)
-  buf.write_byte(0) // null terminator
   let bytes = buf.to_bytes()
   CString(bytes)
 }
@@ -31,10 +27,7 @@ pub fn CString::from_string(string : String) -> CString {
 ///|
 pub fn CString::to_string(self : CString) -> String raise Failure {
   let CString(inner) = self
-  let decoder = @encoding.decoder(UTF8)
-  (try? decoder.decode(
-    inner[:-1], // exclude the null terminator
-  ))
+  (try? @encoding.decode(inner, encoding=UTF8))
   .map_err(fn(err) { Failure("Failed to decode CString: \{err}") })
   .unwrap_or_error()
 }
