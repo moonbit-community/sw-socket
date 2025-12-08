@@ -1,5 +1,5 @@
 ///|
-typealias UInt64 as SIZE_T
+type SIZE_T = UInt64
 
 ///|
 #borrow(cstr)

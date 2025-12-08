@@ -38,7 +38,7 @@ fn wrapped_main() -> Unit raise Failure {
       break
     }
     let buffer = @buffer.new(size_hint=resp.length() + 1)
-    buffer.write_bytes(Bytes::from_fixedarray(resp))
+    buffer.write_bytes(Bytes::from_array(resp))
     buffer.write_byte(0) // add null terminator
     println(@ctypes.CString::from_bytes(buffer.to_bytes()).to_string())
   }

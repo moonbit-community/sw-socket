@@ -1,9 +1,11 @@
-///| `__socket_ffi_isnullptr` accepts a `void*` pointer
+///|
+/// `__socket_ffi_isnullptr` accepts a `void*` pointer
 /// but MoonBit don't allow type param in extern function
 #borrow(ptr)
 pub extern "c" fn is_null_hostent(ptr : FFI_hostent) -> Bool = "__socket_ffi_isnullptr"
 
-///| `__socket_ffi_isnullptr` accepts a `void*` pointer
+///|
+/// `__socket_ffi_isnullptr` accepts a `void*` pointer
 /// but MoonBit don't allow type param in extern function
 #borrow(ptr)
 pub extern "c" fn is_null_sockaddr(ptr : FFI_sockaddr_in) -> Bool = "__socket_ffi_isnullptr"
@@ -27,7 +29,7 @@ pub extern "c" fn _ffi_hostent_get_addr(host : FFI_hostent) -> UInt = "__socket_
 #deprecated
 pub extern "c" fn _ffi_build_sockaddr_in(
   server : FFI_hostent,
-  port : Int
+  port : Int,
 ) -> FFI_sockaddr_in = "__socket_ffi_build_sockaddr_in"
 
 ///|
@@ -44,7 +46,7 @@ pub extern "c" fn _ffi_sockaddr_in_get_family(addr : FFI_sockaddr_in) -> UInt16 
 #borrow(addr)
 pub extern "c" fn _ffi_sockaddr_in_set_family(
   addr : FFI_sockaddr_in,
-  family : UInt16
+  family : UInt16,
 ) -> Unit = "__socket_ffi_sockaddr_in_set_family"
 
 ///|
@@ -55,7 +57,7 @@ pub extern "c" fn _ffi_sockaddr_in_get_addr(addr : FFI_sockaddr_in) -> UInt = "_
 #borrow(addr)
 pub extern "c" fn _ffi_sockaddr_in_set_addr(
   addr : FFI_sockaddr_in,
-  addr_value : UInt
+  addr_value : UInt,
 ) -> Unit = "__socket_ffi_sockaddr_in_set_addr"
 
 ///|
@@ -66,7 +68,7 @@ pub extern "c" fn _ffi_sockaddr_in_get_port(addr : FFI_sockaddr_in) -> UInt16 = 
 #borrow(addr)
 pub extern "c" fn _ffi_sockaddr_in_set_port(
   addr : FFI_sockaddr_in,
-  port : UInt16
+  port : UInt16,
 ) -> Unit = "__socket_ffi_sockaddr_in_set_port"
 
 ///|
@@ -76,14 +78,14 @@ pub extern "c" fn _ffi_hostent_get_addr_str(hostent : FFI_hostent) -> Bytes = "_
 ///|
 #borrow(addr)
 pub extern "c" fn _ffi_sockaddr_in_get_addr_str(
-  addr : FFI_sockaddr_in
+  addr : FFI_sockaddr_in,
 ) -> @ctypes.CString = "__socket_ffi_sockaddr_in_get_addr_str"
 
 ///|
 #borrow(addr, addr_str)
 pub extern "c" fn _ffi_sockaddr_in_set_addr_str(
   addr : FFI_sockaddr_in,
-  addr_str : @ctypes.CString
+  addr_str : @ctypes.CString,
 ) -> UInt = "__socket_ffi_sockaddr_in_set_addr_str"
 
 ///|
@@ -91,7 +93,7 @@ pub extern "c" fn _ffi_sockaddr_in_set_addr_str(
 extern "c" fn __ffi_accept_internal(
   socket_fd : Int,
   addr : FFI_sockaddr_in,
-  addr_len : UInt
+  addr_len : UInt,
 ) -> Int = "__socket_ffi_accept_wrapper"
 
 ///|
