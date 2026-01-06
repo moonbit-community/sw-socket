@@ -28,7 +28,9 @@ pub fn CString::from_string(string : String) -> CString {
 pub fn CString::to_string(self : CString) -> String raise Failure {
   let CString(inner) = self
   (try? @encoding.decode(inner, encoding=UTF8))
-  .map_err(fn(err) { Failure("Failed to decode CString: \{err}") })
+  .map_err(fn(err : @encoding.DecodingError) -> Failure {
+    Failure("Failed to decode CString: \{err}")
+  })
   .unwrap_or_error()
 }
 
