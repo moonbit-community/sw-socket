@@ -1,0 +1,7 @@
+import {
+  "ShellWen/sw_socket",
+}
+
+options(
+  "is-main": true,
+)

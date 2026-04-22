@@ -1,3 +1,0 @@
-{
-  "import": ["ShellWen/sw_socket/ctypes", "ShellWen/sw_socket/internal"]
-}

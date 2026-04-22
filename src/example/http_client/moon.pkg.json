@@ -1,4 +1,0 @@
-{
-  "is-main": true,
-  "import": ["ShellWen/sw_socket", "ShellWen/sw_socket/ctypes", "moonbitlang/core/buffer"]
-}

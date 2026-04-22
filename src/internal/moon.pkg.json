@@ -1,4 +1,0 @@
-{
-  "import": ["ShellWen/sw_socket/ctypes"],
-  "native-stub": ["utils.c"]
-}
