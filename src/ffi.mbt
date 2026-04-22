@@ -180,7 +180,7 @@ pub fn Socket::connect(
   sockaddr_in
   ..set_family(self.domain)
   ..set_addr(addr.get_addr())
-  ..set_port(port)
+  .set_port(port)
   self.connect_addr(sockaddr_in)
   sockaddr_in
 }
@@ -211,7 +211,7 @@ pub fn Socket::bind(
   port : UInt16,
 ) -> SockaddrIn raise Failure {
   let sockaddr_in = new_sockaddr_in()
-  sockaddr_in..set_family(self.domain)..set_addr_str(addr)..set_port(port)
+  sockaddr_in..set_family(self.domain)..set_addr_str(addr).set_port(port)
   self.bind_addr(sockaddr_in)
   sockaddr_in
 }
