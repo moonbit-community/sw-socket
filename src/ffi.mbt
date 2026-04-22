@@ -177,10 +177,7 @@ pub fn Socket::connect(
   port : UInt16,
 ) -> SockaddrIn raise Failure {
   let sockaddr_in = new_sockaddr_in()
-  sockaddr_in
-  ..set_family(self.domain)
-  ..set_addr(addr.get_addr())
-  .set_port(port)
+  sockaddr_in..set_family(self.domain)..set_addr(addr.get_addr()).set_port(port)
   self.connect_addr(sockaddr_in)
   sockaddr_in
 }

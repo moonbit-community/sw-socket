@@ -1,0 +1,8 @@
+import {
+  "ShellWen/sw_socket",
+  "ShellWen/sw_socket/ctypes",
+}
+
+options(
+  "is-main": true,
+)
