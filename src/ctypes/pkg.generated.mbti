@@ -10,8 +10,6 @@ pub struct CString(Bytes)
 pub fn CString::as_bytes(Self) -> Bytes
 pub fn CString::from_bytes(Bytes) -> Self raise Failure
 pub fn CString::from_string(String) -> Self
-#deprecated
-pub fn CString::inner(Self) -> Bytes
 pub fn CString::strlen(Self) -> UInt64
 pub fn CString::to_string(Self) -> String raise Failure
 

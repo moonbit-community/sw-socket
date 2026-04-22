@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "ShellWen/sw_socket/internal"
 
-import(
-  "ShellWen/sw_socket/ctypes"
-)
+import {
+  "ShellWen/sw_socket/ctypes",
+}
 
 // Values
 pub fn _ffi_accept(Int, FFI_sockaddr_in) -> Int
